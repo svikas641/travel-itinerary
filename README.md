@@ -34,7 +34,7 @@ A comprehensive REST API for managing travel itineraries with authentication, ca
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/svikas641/travel-itinerary.git
    cd travel-itinerary
    ```
 
@@ -110,13 +110,7 @@ Once the server is running, you can access the interactive API documentation at:
 - `PUT /api/itineraries/:id` - Update itinerary
 - `DELETE /api/itineraries/:id` - Delete itinerary
 - `POST /api/itineraries/:id/share` - Share itinerary
-- `GET /api/itineraries/shared/:code` - Get shared itinerary
-- `POST /api/itineraries/:id/collaborators` - Add collaborator
-- `DELETE /api/itineraries/:id/collaborators/:userId` - Remove collaborator
-
-### Public Itineraries
-
-- `GET /api/itineraries/public` - Get public itineraries
+- `GET /api/itineraries/share/:shareableId` - Get shared itinerary
 
 ### Health Check
 
@@ -185,20 +179,18 @@ travel-itinerary/
 
 ### Itinerary Model
 
-- `title`: Itinerary title
-- `description`: Itinerary description
+- `_id` : Unique identifier for each activity
+- `UserId`: User Id of the creator
+- `Title`: Trip title (e.g., Goa Trip with Friends)
 - `destination`: Destination details (country, city, coordinates)
 - `startDate`/`endDate`: Trip dates
-- `days`: Array of daily activities
-- `budget`: Budget information
-- `travelers`: List of travelers
-- `tags`: Itinerary tags
-- `isPublic`: Public visibility
-- `isShared`: Sharing status
-- `shareCode`: Unique share code
-- `createdBy`: Creator user ID
-- `collaborators`: List of collaborators
-- `status`: Itinerary status (draft/planned/in_progress/completed/cancelled)
+- `activities` : Array of trip activities
+- `title` : Activity title
+- `time` : Activity time (ISO datetime)
+- `description` : Activity details
+- `location` : Activity location
+- `createdAt` : Timestamp when the trip was created
+- `updatedAt` : Timestamp when the trip was last updated
 
 ## Performance Optimizations
 
