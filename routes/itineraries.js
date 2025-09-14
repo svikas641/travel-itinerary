@@ -3,7 +3,6 @@ const { protect, optionalAuth } = require('../middleware/auth');
 const { validateItinerary, validateItineraryUpdate, validateActivity, validateObjectId, validateItineraryQuery } = require('../middleware/validation');
 const {
   getItineraries,
-  getPublicItineraries,
   getItinerary,
   createItinerary,
   updateItinerary,
@@ -178,70 +177,6 @@ const router = express.Router();
 router.route('/')
   .get(protect, validateItineraryQuery, getItineraries)
   .post(protect, validateItinerary, createItinerary);
-
-/**
- * @swagger
- * /api/itineraries/public:
- *   get:
- *     summary: Get public itineraries
- *     tags: [Itineraries]
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Page number
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Number of items per page
- *       - in: query
- *         name: sort
- *         schema:
- *           type: string
- *           enum: [createdAt, -createdAt, startDate, -startDate, title, -title]
- *         description: Sort field and direction
- *       - in: query
- *         name: destination
- *         schema:
- *           type: string
- *         description: Filter by destination
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search in title, description, and destination
- *     responses:
- *       200:
- *         description: List of public itineraries
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 itineraries:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Itinerary'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     current:
- *                       type: integer
- *                     pages:
- *                       type: integer
- *                     total:
- *                       type: integer
- *       500:
- *         description: Server error
- */
-router.get('/public', validateItineraryQuery, getPublicItineraries);
 
 /**
  * @swagger

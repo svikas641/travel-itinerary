@@ -91,82 +91,6 @@ const getItineraries = async (req, res, next) => {
   }
 };
 
-// @desc    Get public itineraries
-// @route   GET /api/itineraries/public
-// @access  Public
-const getPublicItineraries = async (req, res, next) => {
-  try {
-    const {
-      page = 1,
-      limit = 10,
-      sort = '-createdAt',
-      destination,
-      search
-    } = req.query;
-
-    // Build filter object - for public itineraries, we'll use a simple approach
-    const filters = {};
-
-    if (destination) {
-      filters.destination = new RegExp(destination, 'i');
-    }
-    if (search) {
-      filters.$text = { $search: search };
-    }
-
-    // Check cache first
-    const cacheKey = { page, limit, sort, destination, search };
-    const cachedData = await getCachedPublicItineraries(cacheKey);
-
-    if (cachedData) {
-      return res.json({
-        success: true,
-        ...cachedData
-      });
-    }
-
-    // Calculate pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    // Build sort object
-    const sortObj = {};
-    if (sort.startsWith('-')) {
-      sortObj[sort.substring(1)] = -1;
-    } else {
-      sortObj[sort] = 1;
-    }
-
-    // Execute query
-    const itineraries = await Itinerary.find(filters)
-      .populate('userId', 'name')
-      .sort(sortObj)
-      .skip(skip)
-      .limit(parseInt(limit))
-      .lean();
-
-    const total = await Itinerary.countDocuments(filters);
-
-    const result = {
-      itineraries,
-      pagination: {
-        current: parseInt(page),
-        pages: Math.ceil(total / parseInt(limit)),
-        total
-      }
-    };
-
-    // Cache the result
-    await cachePublicItineraries(cacheKey, result);
-
-    res.json({
-      success: true,
-      ...result
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // @desc    Get single itinerary
 // @route   GET /api/itineraries/:id
 // @access  Private
@@ -399,7 +323,6 @@ const getSharedItinerary = async (req, res, next) => {
 
 module.exports = {
   getItineraries,
-  getPublicItineraries,
   getItinerary,
   createItinerary,
   updateItinerary,
