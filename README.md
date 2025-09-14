@@ -124,53 +124,7 @@ Once the server is running, you can access the interactive API documentation at:
 
 ## Usage Examples
 
-### Register a new user
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "John Doe",
-    "email": "john@example.com",
-    "password": "Password123"
-  }'
-```
-
-### Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "password": "Password123"
-  }'
-```
-
-### Create an itinerary
-
-```bash
-curl -X POST http://localhost:3000/api/itineraries \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "title": "Paris Adventure",
-    "description": "A wonderful trip to Paris",
-    "destination": {
-      "country": "France",
-      "city": "Paris"
-    },
-    "startDate": "2024-06-01",
-    "endDate": "2024-06-07",
-    "travelers": [
-      {
-        "name": "John Doe",
-        "email": "john@example.com",
-        "role": "organizer"
-      }
-    ]
-  }'
-```
+Please refer to the API Documentation here - https://travel-itinerary-szjy.onrender.com/api-docs
 
 ## Testing
 
@@ -289,18 +243,4 @@ travel-itinerary/
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-For support, email support@example.com or create an issue in the repository.
-
-## Roadmap
-
-- [ ] Email notifications
-- [ ] File upload for images
-- [ ] Advanced search and filtering
-- [ ] Export itineraries (PDF, JSON)
-- [ ] Mobile app integration
-- [ ] Real-time collaboration
-- [ ] Analytics and insights
+This project is licensed under the MIT License.

@@ -26,12 +26,6 @@ const router = express.Router();
  *         - startDate
  *         - endDate
  *       properties:
- *         _id:
- *           type: string
- *           description: The auto-generated id of the itinerary
- *         userId:
- *           type: string
- *           description: The user ID who created the itinerary
  *         title:
  *           type: string
  *           description: The itinerary title
