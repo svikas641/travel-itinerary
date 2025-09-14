@@ -22,7 +22,7 @@ const options = {
       {
         url:
           process.env.NODE_ENV === "production"
-            ? `http://localhost:${process.env.PORT || 3000}`
+            ? `https://travel-itinerary-szjy.onrender.com`
             : `http://localhost:${process.env.PORT || 3000}`,
         description:
           process.env.NODE_ENV === "production"

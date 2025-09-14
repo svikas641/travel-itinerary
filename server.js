@@ -20,12 +20,15 @@ app.use(helmet());
 app.use(compression());
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['http://localhost:3000']
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? ["https://travel-itinerary-szjy.onrender.com"]
+        : ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
