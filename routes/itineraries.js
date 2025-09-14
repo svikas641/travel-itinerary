@@ -78,41 +78,6 @@ const router = express.Router();
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           minimum: 1
- *         description: Page number
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           minimum: 1
- *           maximum: 100
- *         description: Number of items per page
- *       - in: query
- *         name: sort
- *         schema:
- *           type: string
- *           enum: [createdAt, -createdAt, startDate, -startDate, title, -title]
- *         description: Sort field and direction
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [draft, planned, in_progress, completed, cancelled]
- *         description: Filter by status
- *       - in: query
- *         name: isPublic
- *         schema:
- *           type: boolean
- *         description: Filter by public status
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search in title, description, and destination
- *       - in: query
  *         name: destination
  *         schema:
  *           type: string
