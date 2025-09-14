@@ -183,7 +183,7 @@ const getItinerary = async (req, res, next) => {
     }
 
     // Check if user owns the itinerary
-    if (itinerary.userId.toString() !== req.user._id.toString()) {
+    if (itinerary.userId._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({
         success: false,
         message: 'Not authorized to access this itinerary'
@@ -328,16 +328,24 @@ const shareItinerary = async (req, res, next) => {
       });
     }
 
-    // Generate share code
-    const shareCode = Math.random().toString(36).substring(2, 10);
-
-    // For simplicity, we'll use the itinerary ID as the shareable ID
+    // Use the itinerary ID as the shareable ID for simplicity
+    // In a production environment, you might want to generate a separate shareable token
     const shareableId = itinerary._id.toString();
+    const shareUrl = `${req.protocol}://${req.get('host')}/api/itineraries/share/${shareableId}`;
 
     res.json({
       success: true,
+      message: 'Itinerary shared successfully',
       shareableId: shareableId,
-      shareUrl: `${req.protocol}://${req.get('host')}/api/itineraries/share/${shareableId}`
+      shareUrl: shareUrl,
+      // Include some basic info about what will be shared
+      sharedData: {
+        title: itinerary.title,
+        destination: itinerary.destination,
+        startDate: itinerary.startDate,
+        endDate: itinerary.endDate,
+        activitiesCount: itinerary.activities.length
+      }
     });
   } catch (error) {
     next(error);
@@ -351,7 +359,7 @@ const getSharedItinerary = async (req, res, next) => {
   try {
     const itinerary = await Itinerary.findById(req.params.shareableId)
       .populate('userId', 'name')
-      .select('-userId'); // Exclude sensitive user data
+      .lean();
 
     if (!itinerary) {
       return res.status(404).json({
@@ -360,9 +368,29 @@ const getSharedItinerary = async (req, res, next) => {
       });
     }
 
+    // Calculate duration manually since we're using .lean()
+    const duration = itinerary.startDate && itinerary.endDate
+      ? Math.ceil(Math.abs(itinerary.endDate - itinerary.startDate) / (1000 * 60 * 60 * 24)) + 1
+      : 0;
+
+    // Create a sanitized version of the itinerary without sensitive data
+    const sanitizedItinerary = {
+      _id: itinerary._id,
+      title: itinerary.title,
+      destination: itinerary.destination,
+      startDate: itinerary.startDate,
+      endDate: itinerary.endDate,
+      activities: itinerary.activities,
+      createdAt: itinerary.createdAt,
+      updatedAt: itinerary.updatedAt,
+      duration: duration,
+      // Include only the creator's name, not the full user object
+      createdBy: itinerary.userId ? itinerary.userId.name : 'Unknown'
+    };
+
     res.json({
       success: true,
-      itinerary
+      itinerary: sanitizedItinerary
     });
   } catch (error) {
     next(error);

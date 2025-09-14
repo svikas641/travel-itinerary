@@ -1,6 +1,6 @@
 const express = require('express');
 const { protect, optionalAuth } = require('../middleware/auth');
-const { validateItinerary, validateActivity, validateObjectId, validateItineraryQuery } = require('../middleware/validation');
+const { validateItinerary, validateItineraryUpdate, validateActivity, validateObjectId, validateItineraryQuery } = require('../middleware/validation');
 const {
   getItineraries,
   getPublicItineraries,
@@ -353,7 +353,7 @@ router.get('/public', validateItineraryQuery, getPublicItineraries);
  */
 router.route('/:id')
   .get(protect, validateObjectId, getItinerary)
-  .put(protect, validateObjectId, validateItinerary, updateItinerary)
+  .put(protect, validateObjectId, validateItineraryUpdate, updateItinerary)
   .delete(protect, validateObjectId, deleteItinerary);
 
 /**
@@ -381,10 +381,27 @@ router.route('/:id')
  *               properties:
  *                 success:
  *                   type: boolean
- *                 shareCode:
+ *                 message:
+ *                   type: string
+ *                 shareableId:
  *                   type: string
  *                 shareUrl:
  *                   type: string
+ *                 sharedData:
+ *                   type: object
+ *                   properties:
+ *                     title:
+ *                       type: string
+ *                     destination:
+ *                       type: string
+ *                     startDate:
+ *                       type: string
+ *                       format: date
+ *                     endDate:
+ *                       type: string
+ *                       format: date
+ *                     activitiesCount:
+ *                       type: number
  *       401:
  *         description: Not authorized
  *       403:
@@ -411,7 +428,7 @@ router.post('/:id/share', protect, validateObjectId, shareItinerary);
  *         description: Shareable ID
  *     responses:
  *       200:
- *         description: Shared itinerary details
+ *         description: Shared itinerary details (sensitive data excluded)
  *         content:
  *           application/json:
  *             schema:
@@ -420,7 +437,35 @@ router.post('/:id/share', protect, validateObjectId, shareItinerary);
  *                 success:
  *                   type: boolean
  *                 itinerary:
- *                   $ref: '#/components/schemas/Itinerary'
+ *                   type: object
+ *                   properties:
+ *                     _id:
+ *                       type: string
+ *                     title:
+ *                       type: string
+ *                     destination:
+ *                       type: string
+ *                     startDate:
+ *                       type: string
+ *                       format: date
+ *                     endDate:
+ *                       type: string
+ *                       format: date
+ *                     activities:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Activity'
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     duration:
+ *                       type: number
+ *                     createdBy:
+ *                       type: string
+ *                       description: Name of the itinerary creator
  *       404:
  *         description: Shared itinerary not found
  *       500:

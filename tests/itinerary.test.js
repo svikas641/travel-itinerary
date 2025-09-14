@@ -41,7 +41,7 @@ describe('Itinerary Routes', () => {
 
       expect(response.body.success).toBe(true);
       expect(response.body.itinerary.title).toBe(itineraryData.title);
-      expect(response.body.itinerary.userId.toString()).toBe(user._id.toString());
+      expect(response.body.itinerary.userId._id.toString()).toBe(user._id.toString());
     });
 
     it('should not create itinerary without required fields', async () => {
@@ -262,6 +262,136 @@ describe('Itinerary Routes', () => {
 
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('Not authorized to delete this itinerary');
+    });
+  });
+
+  describe('POST /api/itineraries/:id/share', () => {
+    let itinerary;
+
+    beforeEach(async () => {
+      itinerary = await Itinerary.create({
+        title: 'Paris Trip',
+        destination: 'Paris, France',
+        startDate: '2024-06-01',
+        endDate: '2024-06-07',
+        activities: [
+          {
+            title: 'Visit Eiffel Tower',
+            time: '10:00 AM',
+            location: 'Eiffel Tower, Paris',
+            description: 'Visit the iconic Eiffel Tower'
+          }
+        ],
+        userId: user._id
+      });
+    });
+
+    it('should share itinerary and return shareable link', async () => {
+      const response = await request(app)
+        .post(`/api/itineraries/${itinerary._id}/share`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.message).toBe('Itinerary shared successfully');
+      expect(response.body.shareableId).toBe(itinerary._id.toString());
+      expect(response.body.shareUrl).toContain('/api/itineraries/share/');
+      expect(response.body.sharedData).toBeDefined();
+      expect(response.body.sharedData.title).toBe('Paris Trip');
+      expect(response.body.sharedData.activitiesCount).toBe(1);
+    });
+
+    it('should not share itinerary of another user', async () => {
+      const anotherUser = await User.create({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        password: 'Password123'
+      });
+      const anotherToken = anotherUser.generateAuthToken();
+
+      const response = await request(app)
+        .post(`/api/itineraries/${itinerary._id}/share`)
+        .set('Authorization', `Bearer ${anotherToken}`)
+        .expect(403);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Not authorized to share this itinerary');
+    });
+
+    it('should not share non-existent itinerary', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const response = await request(app)
+        .post(`/api/itineraries/${fakeId}/share`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(404);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Itinerary not found');
+    });
+  });
+
+  describe('GET /api/itineraries/share/:shareableId', () => {
+    let itinerary;
+
+    beforeEach(async () => {
+      itinerary = await Itinerary.create({
+        title: 'Paris Trip',
+        destination: 'Paris, France',
+        startDate: '2024-06-01',
+        endDate: '2024-06-07',
+        activities: [
+          {
+            title: 'Visit Eiffel Tower',
+            time: '10:00 AM',
+            location: 'Eiffel Tower, Paris',
+            description: 'Visit the iconic Eiffel Tower'
+          },
+          {
+            title: 'Louvre Museum',
+            time: '2:00 PM',
+            location: 'Louvre Museum, Paris',
+            description: 'Explore world-famous art'
+          }
+        ],
+        userId: user._id
+      });
+    });
+
+    it('should get shared itinerary without sensitive data', async () => {
+      const response = await request(app)
+        .get(`/api/itineraries/share/${itinerary._id}`)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.itinerary).toBeDefined();
+      expect(response.body.itinerary._id).toBe(itinerary._id.toString());
+      expect(response.body.itinerary.title).toBe('Paris Trip');
+      expect(response.body.itinerary.destination).toBe('Paris, France');
+      expect(response.body.itinerary.activities).toHaveLength(2);
+      expect(response.body.itinerary.createdBy).toBe('John Doe');
+
+      // Verify sensitive data is excluded
+      expect(response.body.itinerary.userId).toBeUndefined();
+      expect(response.body.itinerary.__v).toBeUndefined();
+    });
+
+    it('should return 404 for non-existent shared itinerary', async () => {
+      const fakeId = '507f1f77bcf86cd799439011';
+      const response = await request(app)
+        .get(`/api/itineraries/share/${fakeId}`)
+        .expect(404);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.message).toBe('Shared itinerary not found');
+    });
+
+    it('should work without authentication (public access)', async () => {
+      const response = await request(app)
+        .get(`/api/itineraries/share/${itinerary._id}`)
+        .expect(200);
+
+      expect(response.body.success).toBe(true);
+      expect(response.body.itinerary.title).toBe('Paris Trip');
     });
   });
 });

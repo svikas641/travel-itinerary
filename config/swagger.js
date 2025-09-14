@@ -3,194 +3,196 @@ const swaggerUi = require('swagger-ui-express');
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'Travel Itinerary API',
-      version: '1.0.0',
-      description: 'A comprehensive REST API for managing travel itineraries with authentication, caching, and collaboration features.',
+      title: "Travel Itinerary API",
+      version: "1.0.0",
+      description:
+        "A comprehensive REST API for managing travel itineraries with authentication, caching, and collaboration features.",
       contact: {
-        name: 'API Support',
-        email: 'support@example.com'
+        name: "API Support",
+        email: "support@example.com",
       },
       license: {
-        name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT'
-      }
+        name: "MIT",
+        url: "https://opensource.org/licenses/MIT",
+      },
     },
     servers: [
       {
-        url: process.env.NODE_ENV === 'production'
-          ? 'https://your-api-domain.com/api'
-          : `http://localhost:${process.env.PORT || 3000}/api`,
-        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
-      }
+        url:
+          process.env.NODE_ENV === "production"
+            ? `http://localhost:${process.env.PORT || 3000}`
+            : `http://localhost:${process.env.PORT || 3000}`,
+        description:
+          process.env.NODE_ENV === "production"
+            ? "Production server"
+            : "Development server",
+      },
     ],
     components: {
       securitySchemes: {
         bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-          description: 'Enter JWT token in the format: Bearer <token>'
-        }
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "Enter JWT token in the format: Bearer <token>",
+        },
       },
       schemas: {
         Error: {
-          type: 'object',
+          type: "object",
           properties: {
             success: {
-              type: 'boolean',
-              example: false
+              type: "boolean",
+              example: false,
             },
             message: {
-              type: 'string',
-              example: 'Error message'
+              type: "string",
+              example: "Error message",
             },
             errors: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
                   field: {
-                    type: 'string'
+                    type: "string",
                   },
                   message: {
-                    type: 'string'
-                  }
-                }
-              }
-            }
-          }
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
         },
         Success: {
-          type: 'object',
+          type: "object",
           properties: {
             success: {
-              type: 'boolean',
-              example: true
+              type: "boolean",
+              example: true,
             },
             message: {
-              type: 'string',
-              example: 'Operation successful'
-            }
-          }
+              type: "string",
+              example: "Operation successful",
+            },
+          },
         },
         Pagination: {
-          type: 'object',
+          type: "object",
           properties: {
             current: {
-              type: 'integer',
-              description: 'Current page number'
+              type: "integer",
+              description: "Current page number",
             },
             pages: {
-              type: 'integer',
-              description: 'Total number of pages'
+              type: "integer",
+              description: "Total number of pages",
             },
             total: {
-              type: 'integer',
-              description: 'Total number of items'
-            }
-          }
-        }
+              type: "integer",
+              description: "Total number of items",
+            },
+          },
+        },
       },
       responses: {
         UnauthorizedError: {
-          description: 'Authentication information is missing or invalid',
+          description: "Authentication information is missing or invalid",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error",
               },
               example: {
                 success: false,
-                message: 'Not authorized to access this route'
-              }
-            }
-          }
+                message: "Not authorized to access this route",
+              },
+            },
+          },
         },
         ForbiddenError: {
-          description: 'Access denied',
+          description: "Access denied",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error",
               },
               example: {
                 success: false,
-                message: 'Not authorized to access this resource'
-              }
-            }
-          }
+                message: "Not authorized to access this resource",
+              },
+            },
+          },
         },
         NotFoundError: {
-          description: 'Resource not found',
+          description: "Resource not found",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error",
               },
               example: {
                 success: false,
-                message: 'Resource not found'
-              }
-            }
-          }
+                message: "Resource not found",
+              },
+            },
+          },
         },
         ValidationError: {
-          description: 'Validation failed',
+          description: "Validation failed",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error",
               },
               example: {
                 success: false,
-                message: 'Validation failed',
+                message: "Validation failed",
                 errors: [
                   {
-                    field: 'email',
-                    message: 'Please provide a valid email'
-                  }
-                ]
-              }
-            }
-          }
+                    field: "email",
+                    message: "Please provide a valid email",
+                  },
+                ],
+              },
+            },
+          },
         },
         ServerError: {
-          description: 'Internal server error',
+          description: "Internal server error",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error",
               },
               example: {
                 success: false,
-                message: 'Server Error'
-              }
-            }
-          }
-        }
-      }
+                message: "Server Error",
+              },
+            },
+          },
+        },
+      },
     },
     tags: [
       {
-        name: 'Authentication',
-        description: 'User authentication and profile management'
+        name: "Authentication",
+        description: "User authentication and profile management",
       },
       {
-        name: 'Itineraries',
-        description: 'Travel itinerary management'
+        name: "Itineraries",
+        description: "Travel itinerary management",
       },
       {
-        name: 'Health',
-        description: 'API health and status'
-      }
-    ]
+        name: "Health",
+        description: "API health and status",
+      },
+    ],
   },
-  apis: [
-    './routes/*.js',
-    './server.js'
-  ]
+  apis: ["./routes/*.js", "./server.js"],
 };
 
 const specs = swaggerJsdoc(options);

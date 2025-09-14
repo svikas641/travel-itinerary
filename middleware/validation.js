@@ -79,6 +79,37 @@ const validateItinerary = [
   handleValidationErrors
 ];
 
+const validateItineraryUpdate = [
+  body('title')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Title must be between 1 and 100 characters'),
+  body('destination')
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage('Destination is required'),
+  body('startDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Start date must be a valid date'),
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid date'),
+  body().custom((value, { req }) => {
+    // Only validate date relationship if both dates are provided
+    if (req.body.startDate && req.body.endDate) {
+      if (new Date(req.body.endDate) <= new Date(req.body.startDate)) {
+        throw new Error('End date must be after start date');
+      }
+    }
+    return true;
+  }),
+  handleValidationErrors
+];
+
 const validateActivity = [
   body('title')
     .trim()
@@ -139,6 +170,7 @@ module.exports = {
   validateUserLogin,
   validatePasswordUpdate,
   validateItinerary,
+  validateItineraryUpdate,
   validateActivity,
   validateObjectId,
   validateItineraryQuery

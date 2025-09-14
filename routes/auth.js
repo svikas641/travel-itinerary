@@ -232,7 +232,7 @@ router.put('/profile', protect, updateProfile);
  *             properties:
  *               currentPassword:
  *                 type: string
- *                 example: OldPassword123
+ *                 example: Password123
  *               newPassword:
  *                 type: string
  *                 example: NewPassword123
